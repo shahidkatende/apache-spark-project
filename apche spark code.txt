@@ -1,3 +1,5 @@
+# Jupyter Notebook: notebooks/data_preprocessing.ipynb
+# Create a Jupyter notebook for data preprocessing:
 # Import required libraries
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
@@ -22,6 +24,9 @@ df.show()
 
 # Save processed data
 df.write.csv("data/processed_data.csv", header=True)
+spark.stop()
+# SJupyter Notebook: notebooks/machine_learning.ipynb
+# SCreate a Jupyter notebook for machine learning:
 
 # Import required libraries
 from pyspark.sql import SparkSession
@@ -49,10 +54,14 @@ model = lr.fit(train_data)
 # Make predictions
 predictions = model.transform(test_data)
 
-# Evaluate the model
+#Evaluate the model
 evaluator = BinaryClassificationEvaluator(labelCol="label")
 accuracy = evaluator.evaluate(predictions)
-print(f"Model Accuracy: {accuracy}")
+print(f"Model Accuracy: {accuracy}") 
+spark.stop()
+
+#Python Script: scripts/data_preprocessing.py
+#Create a Python script for data preprocessing:
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
