@@ -1,0 +1,71 @@
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("Data Preprocessing").getOrCreate()
+
+# Load the data
+df = spark.read.csv("data/sample_data.csv", header=True, inferSchema=True)
+
+# Show the data
+df.show()
+
+# Basic statistics
+df.describe().show()
+
+# Feature Engineering: Create new feature
+df = df.withColumn("feature_sum", col("feature1") + col("feature2"))
+
+# Show the updated data
+df.show()
+
+# Save processed data
+df.write.csv("data/processed_data.csv", header=True)
+
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.classification import LogisticRegression
+from pyspark.ml.evaluation import BinaryClassificationEvaluator
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("Machine Learning").getOrCreate()
+
+# Load processed data
+df = spark.read.csv("data/processed_data.csv", header=True, inferSchema=True)
+
+# Feature engineering
+assembler = VectorAssembler(inputCols=["feature1", "feature2", "feature_sum"], outputCol="features")
+df = assembler.transform(df)
+
+# Split data into training and test sets
+train_data, test_data = df.randomSplit([0.7, 0.3])
+
+# Initialize and train the model
+lr = LogisticRegression(featuresCol="features", labelCol="label")
+model = lr.fit(train_data)
+
+# Make predictions
+predictions = model.transform(test_data)
+
+# Evaluate the model
+evaluator = BinaryClassificationEvaluator(labelCol="label")
+accuracy = evaluator.evaluate(predictions)
+print(f"Model Accuracy: {accuracy}")
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+
+def preprocess_data(input_path, output_path):
+    spark = SparkSession.builder.appName("Data Preprocessing").getOrCreate()
+    
+    df = spark.read.csv(input_path, header=True, inferSchema=True)
+    df = df.withColumn("feature_sum", col("feature1") + col("feature2"))
+    df.write.csv(output_path, header=True)
+    
+    spark.stop()
+
+if __name__ == "__main__":
+    preprocess_data("data/sample_data.csv", "data/processed_data.csv")
+
